@@ -1,3 +1,5 @@
+import os
+
 mesinNyala = True
 no_kartuLift = str()
 pin_kartu = str()
@@ -6,6 +8,7 @@ password_admin = 0
 userIndex = -1
 admin = [["admin_kantor", 123456], ["admin_apartemen", 234567]]
 
+print(os.getcwd())
 users = open('kartuLift.data', 'r+').readlines()
 for i in range(len(users)):
   users[i] = users[i][:-1].split(",")

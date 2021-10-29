@@ -1,4 +1,5 @@
 from threading import Timer
+import os
 
 class systemState:
     def __init__(self):
@@ -33,9 +34,9 @@ class elevator:
 
 class accessCards:
     def __init__(self):
-        self.data = open('kartuLift.data', 'r').readlines()
+        self.data = open('test.txt', 'r+').readlines()
         for i in range(len(self.data)):
-            self.data = self.data[i][:-1].split()
+            self.data[i] = self.data[i][:-1].split(",")
         
 
 def printDivider():
@@ -43,6 +44,29 @@ def printDivider():
 
 def inputPrompt():
     return input("Masukkan input: ")
+
+def checkCard(cardData, destination):
+    data = cardData.data
+    id = str()
+    pw = str()
+
+    while (True):
+        printDivider()
+        id = input("Enter your access card ID: ")
+        
+        for i in range(len(data)):
+            if (id == data[i][0]):
+                if (data[i][1] == "0"):
+                    return True
+                else:
+                    pw = input("Enter your access card password: ")
+                    if (pw == data[i][1]):
+                        return True
+        
+        tryAgain = input("Your credentials are incorrect, do you want to try again (Y/N) :")
+        if (not tryAgain):
+            return False
+
 
 def runMallLift(globalState, elevator):
     validInput = False
@@ -83,7 +107,7 @@ def runMallLift(globalState, elevator):
     else:
         globalState.turnOff()
 
-def runApartLift(globalState, elevator):
+def runApartLift(globalState, cardData, elevator):
     validInput = False
     floorNum = elevator.currentFloor
     apartMin = elevator.minFloor
@@ -112,14 +136,18 @@ def runApartLift(globalState, elevator):
             print("Lantai tujuan tidak sesuai")
             destination = int(input("Masukkan lantai tujuan: "))
 
-        printDivider()
-        print("\nanda sedang di dalam lift\n")
+        if (destination != 0):
+            cardAccepted = checkCard(cardData, destination)
+        
+            if (cardAccepted):
+                printDivider()
+                print("\nanda sedang di dalam lift\n")
+                elevator.goTo(globalState, destination)            
 
-        elevator.goTo(globalState, destination)
     elif (action == 2):
         globalState.changeArea(1)
     else:
-        globalState.turnOff
+        globalState.turnOff()
 
 def main():
     mallMin = -1
@@ -141,6 +169,7 @@ def main():
     globalState = systemState()
     mallElevator = elevator(mallMin, mallMax, floorNum)
     apartElevator = elevator(apartMin, apartMax, 0)
+    cardData = accessCards()
 
     while (globalState.systemOn):
         if (globalState.insideElev):
@@ -150,6 +179,6 @@ def main():
             runMallLift(globalState, mallElevator)
 
         elif (globalState.currentArea == 2):
-            runApartLift(globalState, apartElevator)
+            runApartLift(globalState, cardData, apartElevator)
 
 main()
