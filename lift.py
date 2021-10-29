@@ -37,7 +37,6 @@ class mallShops:
         with open('DataMall.csv', newline='') as f:
             reader = csv.reader(f)
             self.data = list(reader)
-            print(self.data)
 
 class accessCards:
     def __init__(self):
@@ -104,9 +103,9 @@ def runMallLift(globalState, shopData, elevator):
             print("1: call elevator\n2: Info Toko\n0: exit")
         
         action = int(inputPrompt())
-        if (floorNum == mallMax and (action >= 0 and action <= 2)):
+        if (floorNum == mallMax and (action >= 0 and action <= 3)):
             validInput = True
-        elif (action >= 0 and action <= 1):
+        elif (action >= 0 and action <= 2):
             validInput = True
 
     if (action == 1):
@@ -145,7 +144,7 @@ def runApartLift(globalState, cardData, elevator):
             print("1: call elevator\n0: exit")
 
         action = int(inputPrompt())
-        if (floorNum == apartMin and (action >= 0 and action <= 2)):
+        if (floorNum == apartMin and (action == 0 or action == 1 or action == 3)):
             validInput = True
         elif (action >= 0 and action <= 1):
             validInput = True
