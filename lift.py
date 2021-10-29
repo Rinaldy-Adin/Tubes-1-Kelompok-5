@@ -1,3 +1,4 @@
+from abc import abstractproperty
 from threading import Timer
 import csv
 
@@ -37,12 +38,40 @@ class mallShops:
         with open('DataMall.csv', newline='') as f:
             reader = csv.reader(f)
             self.data = list(reader)
+    
+    def getStoreTypes(self):
+        storeTypes = []
+
+        for store in self.data:
+            storeType = store[1]
+            if (not(storeType in storeTypes)):
+                storeTypes.append(storeType)
+        
+        return storeTypes
+
+    def getStoresByType(self, storeType):
+        stores = []
+
+        for store in self.data:
+            if (store[1] == storeType):
+                stores.append(store)
+        
+        return stores
+    
+    def getStoresByFloor(self, floor):
+        stores = []
+
+        for store in self.data:
+            if (int(store[2]) == floor):
+                stores.append(store)
+        
+        return stores
 
 class accessCards:
     def __init__(self):
-        self.data = open('kartuLift.csv', 'r', encoding="utf-8-sig").readlines()
-        for i in range(len(self.data)):
-            self.data[i] = self.data[i][:-1].split(",")        
+        with open('kartuLift.csv', newline='') as f:
+            reader = csv.reader(f)
+            self.data = list(reader) 
 
 def printDivider():
     print("=======================================================")
@@ -50,17 +79,60 @@ def printDivider():
 def inputPrompt():
     return input("Masukkan input: ")
 
-def mallInfo(shopData):
-    printDivider()
-    print("Pilih kategori pencarian: ")
-    print("1. Pencarian nama toko")
-    print("2. Jenis toko")
-    print("3. Lantai")
-
+def mallInfo(shopData, elevator):
     category = 0
     while (category < 1 or category > 3):
         printDivider()
-        category = inputPrompt()
+        print("Pilih kategori pencarian: ")
+        print("1. Pencarian nama toko")
+        print("2. Jenis toko")
+        print("3. Lantai")
+        category = int(inputPrompt())
+    
+    if (category == 1):
+        pass
+    elif (category == 2):
+        storeTypes = shopData.getStoreTypes()
+
+        printDivider()
+        for i in range(len(storeTypes)):
+            print("{}. {}".format(i+1, storeTypes[i]))
+        
+        storeTypeIdx = 0
+        while (storeTypeIdx < 1 or storeTypeIdx > len(storeTypes)):
+            printDivider()
+            storeTypeIdx = int(input("Masukkan nomor kategori toko yang ingin dicari: "))
+        
+        storeType = storeTypes[storeTypeIdx-1]
+        stores = shopData.getStoresByType(storeType)
+
+        printDivider()
+        for i in range(len(stores)):
+            print("{}. {}".format(i+1, stores[i][0]))
+
+        storeIdx = 0
+        while (storeIdx < 1 or storeIdx > len(stores)):
+            printDivider()
+            storeIdx = int(input("Masukkan nomor toko yang ingin dicari: "))
+        storeIdx -= 1
+
+        printDivider()
+        print("{} terdapat pada lantai {}".format(stores[storeIdx][0], stores[storeIdx][2]))
+    else:
+        printDivider()
+        for i in range(elevator.maxFloor - elevator.minFloor + 1):
+            print("{}. Lantai {}".format(i + 1, elevator.minFloor + i))
+        
+        floorIdx = 0
+        while (floorIdx < 1 or floorIdx > elevator.maxFloor - elevator.minFloor + 1):
+            printDivider()
+            floorIdx = int(input("Masukkan nomor indeks lantai toko yang ingin dicari: "))
+        floorIdx += elevator.minFloor - 1
+
+        printDivider()
+        stores = shopData.getStoresByFloor(floorIdx)
+        for i in range(len(stores)):
+            print("{}. {}".format(i+1, stores[i][0]))
 
 def checkCard(cardData, destination):
     data = cardData.data
@@ -123,7 +195,7 @@ def runMallLift(globalState, shopData, elevator):
         elevator.goTo(globalState, destination)
 
     elif (action == 2):
-        mallInfo(shopData)
+        mallInfo(shopData, elevator)
     elif (action == 3):
         globalState.changeArea(2)
     else:
@@ -197,6 +269,8 @@ def main():
     apartElevator = elevator(apartMin, apartMax, 0)
     cardData = accessCards()
     shopData = mallShops()
+
+    print(shopData.getStoreTypes())
 
     while (globalState.systemOn):
         if (globalState.insideElev):
