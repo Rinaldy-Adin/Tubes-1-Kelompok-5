@@ -277,7 +277,7 @@ def main():
     mallMax = 4
 
     apartMin = 0
-    apartMax = 20
+    apartMax = 10
 
     floorNum = mallMin - 1
 
