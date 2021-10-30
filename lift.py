@@ -66,6 +66,15 @@ class mallShops:
                 stores.append(store)
         
         return stores
+    
+    def getStoresByName(self, name):
+        stores = []
+
+        for store in self.data:
+            if (store[0].lower().find(name.lower()) != -1):
+                stores.append(store)
+
+        return stores
 
 class accessCards:
     def __init__(self):
@@ -90,7 +99,23 @@ def mallInfo(shopData, elevator):
         category = int(inputPrompt())
     
     if (category == 1):
-        pass
+        printDivider()
+        storeName = input("Masukkan nama toko yang ingin dicari: ")
+
+        stores = shopData.getStoresByName(storeName)
+
+        printDivider()
+        for i in range(len(stores)):
+            print("{}. {}".format(i+1, stores[i][0]))
+
+        storeIdx = 0
+        while (storeIdx < 1 or storeIdx > len(stores)):
+            printDivider()
+            storeIdx = int(input("Masukkan nomor toko yang ingin dicari: "))
+        storeIdx -= 1
+
+        printDivider()
+        print("{} terdapat pada lantai {}".format(stores[storeIdx][0], stores[storeIdx][2]))
     elif (category == 2):
         storeTypes = shopData.getStoreTypes()
 
@@ -269,8 +294,6 @@ def main():
     apartElevator = elevator(apartMin, apartMax, 0)
     cardData = accessCards()
     shopData = mallShops()
-
-    print(shopData.getStoreTypes())
 
     while (globalState.systemOn):
         if (globalState.insideElev):
