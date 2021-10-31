@@ -35,7 +35,7 @@ class elevator:
 
 class mallShops:
     def __init__(self):
-        with open('DataMall.csv', newline='') as f:
+        with open('DataMall.csv', encoding="utf-8-sig", newline='') as f:
             reader = csv.reader(f)
             self.data = list(reader)
     
@@ -78,7 +78,7 @@ class mallShops:
 
 class accessCards:
     def __init__(self):
-        with open('kartuLift.csv', newline='') as f:
+        with open('kartuLift.csv', encoding="utf-8-sig", newline='') as f:
             reader = csv.reader(f)
             self.data = list(reader) 
 
